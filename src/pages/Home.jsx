@@ -8,6 +8,7 @@ import Bird from '../models/Bird'
 {/* <div className='absolute top-28 left-0 right-0 z-10 flex items-center justify-center'>PPOOP</div> */}
 const Home = () => {
   const [isRotating , setIsRotating]=useState(false);
+  const[currentStage,setCurrentStage]=useState(1);
 
   const adjustIslandForScreenSize = () => {
     let screenScale=null; 
@@ -58,11 +59,11 @@ const Home = () => {
 <hemisphereLight skyColor="#b1e1ff" groundColor="#000000" intensity={1}/>
 
 <Plane position={planePosition} scale={planeScale} isRotating={isRotating} rotation={[0,20,0]}/>
-<Sky/>
+<Sky isRotating={isRotating}/>
 <Bird/>
 
 <Island position={islandPosition} scale ={islandScale} rotation={islandRotation}
-isRotating={isRotating} setIsRotating={setIsRotating}/>
+isRotating={isRotating} setIsRotating={setIsRotating} setCurrentStage={setCurrentStage}/>
 </Suspense>
 
 </Canvas> 
