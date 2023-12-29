@@ -1,23 +1,26 @@
-import React, { useRef, useState } from 'react'
+import React, { Suspense, useRef, useState } from 'react'
 import emailjs from '@emailjs/browser';
+import { Canvas } from '@react-three/fiber';
+import Fox from '../models/Fox';
+import Loader from '../components/Loader';
 const Contact = () => {
   const [form , setForm]=useState({name:"" , email:"" , message:""});
   const[isLoading , setIsLoading]=useState(false);
   const formRef =useRef(null);
+  const [currentAnimation , setCurrentAnimation]=useState('idle')
   
   const handleChange =(e)=>{
     setForm({...form , [e.target.name]:e.target.value})
 
   };
 
-  const handleFocus =()=>{
-
-  };
-  const handleBlur =()=>{};
+  const handleFocus =()=>setCurrentAnimation('walk')
+  const handleBlur =()=>setCurrentAnimation('idle')
+  
   const handleSubmit =(e)=>{
     e.preventDefault();
     setIsLoading(true);
-
+setCurrentAnimation('hit');
 emailjs.send(
 import.meta.env.VITE_APP_EMAILJS_SERVICE_ID ,
 import.meta.env.VITE_APP_EMAILJS_TEMPLATE_ID ,
@@ -35,6 +38,7 @@ import.meta.env.VITE_APP_EMAILJS_PUBLIC_KEY
 })
 .catch
 ((error)=>{setIsLoading(false)
+  setCurrentAnimation('idle');
 console.log(error)})
 };
 
@@ -89,7 +93,25 @@ disabled={isLoading} onSubmit={handleSubmit}>{isLoading ? "sending..." :"Send Me
 </form>
 
 </div>
+<div  className='lg:w-1/2 w-full lg:h-auto md:h-[550px] h-[350px]'>
+<Canvas  camera={{
+            position: [0, 0, 5],
+            fov: 75,
+            near: 0.1,
+            far: 1000,
+          }}>
+<Suspense fallback={<Loader />}>
+<Fox/>
 
+
+
+
+
+
+</Suspense>
+
+</Canvas>
+</div>
 
    </section>
   )
