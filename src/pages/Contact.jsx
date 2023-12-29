@@ -3,11 +3,16 @@ import emailjs from '@emailjs/browser';
 import { Canvas } from '@react-three/fiber';
 import Fox from '../models/Fox';
 import Loader from '../components/Loader';
+import useAlert from '../hooks/useAlert';
+
+
+
 const Contact = () => {
   const [form , setForm]=useState({name:"" , email:"" , message:""});
   const[isLoading , setIsLoading]=useState(false);
   const formRef =useRef(null);
   const [currentAnimation , setCurrentAnimation]=useState('idle')
+  const { alert, showAlert, hideAlert } = useAlert();
   
   const handleChange =(e)=>{
     setForm({...form , [e.target.name]:e.target.value})
@@ -34,20 +39,36 @@ import.meta.env.VITE_APP_EMAILJS_TEMPLATE_ID ,
 import.meta.env.VITE_APP_EMAILJS_PUBLIC_KEY
 ).then(()=>{
   setIsLoading(false)
-  setForm({name:"" , email:"" , message:""});
+  showAlert({
+    show: true,
+    text: "Thank you for your message 😃",
+    type: "success",
+  });
+  setTimeout(()=>{
+    hideAlert();
+    setCurrentAnimation('idle');
+    setForm({name:"" , email:"" , message:""});
+  },3000)
+  
 })
 .catch
 ((error)=>{setIsLoading(false)
   setCurrentAnimation('idle');
 console.log(error)})
+showAlert({
+  show: true,
+  text: "I didn't receive your message 😢",
+  type: "danger",
+});
 };
 
 
   return (
    <section className='relative flex lg:flex-row flex-col max-container'>
+     {alert.show && <Alert {...alert} />}
 <div className='flex-1 min-w-[50%] flex flex-col'>
 <h1 className='head-text'>Get in Touch</h1>
-<form className='w-full flex flex-col gap-7 mt-14' onSubmit={handleSubmit}>
+<form  ref ={formRef} className='w-full flex flex-col gap-7 mt-14' onSubmit={handleSubmit}>
 
 <label className='text-black-500 font-semibold'> Name
 <input type='text' 
@@ -100,8 +121,21 @@ disabled={isLoading} onSubmit={handleSubmit}>{isLoading ? "sending..." :"Send Me
             near: 0.1,
             far: 1000,
           }}>
+             <directionalLight position={[0, 0, 1]} intensity={2.5} />
+          <ambientLight intensity={1} />
+          <pointLight position={[5, 10, 0]} intensity={2} />
+          <spotLight
+            position={[10, 10, 10]}
+            angle={0.15}
+            penumbra={1}
+            intensity={2}
+          />
 <Suspense fallback={<Loader />}>
-<Fox/>
+<Fox  currentAnimation={currentAnimation}
+              position={[0.5, 0.35, 0]}
+              rotation={[12.629, -0.6, 0]}
+              scale={[0.5, 0.5, 0.5]}
+              />
 
 
 
